@@ -753,7 +753,7 @@ qif <- function (formula = formula(data), id = id, data = parent.frame(), b = NU
   #print(tgi)
 
   pvalue <- 1 - pchisq(Q,np)
-  if (corstr == "indenpendence") {
+  if (corstr == "independence") {
     AIC <- Q
     BIC <- Q
   }
