@@ -1,6 +1,6 @@
 Package: qif
 Title: Quadratic Inference Function
-Version: 1.5
+Version: 1.5.1
 Date: 2019-7-2
 Authors@R: c(
     person(given = "Zhichang", family = "Jiang", role = c("aut")),
