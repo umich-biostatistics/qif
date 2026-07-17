@@ -169,7 +169,7 @@ summary.qif <- function(object, correlation = TRUE, ...)
 #'
 #' @return A list containing:
 #'
-#' \itemize{
+#' \describe{
 #'   \item{\code{title}: }{name of qif}
 #'   \item{\code{version}: }{the current version of qif}
 #'   \item{\code{model}: }{analysis model for link function, variance function and correlation struture}

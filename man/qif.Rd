@@ -4,9 +4,17 @@
 \alias{qif}
 \title{Function to Solve a Quadratic Inference Function Model}
 \usage{
-qif(formula = formula(data), id = id, data = parent.frame(),
-  b = NULL, tol = 1e-08, maxiter = 1000, family = gaussian,
-  corstr = "independence", invfun = "finv")
+qif(
+  formula = formula(data),
+  id = id,
+  data = parent.frame(),
+  b = NULL,
+  tol = 1e-08,
+  maxiter = 1000,
+  family = gaussian,
+  corstr = "independence",
+  invfun = "finv"
+)
 }
 \arguments{
 \item{formula}{a formula expression as for other regression models, of the form
@@ -41,7 +49,7 @@ following are permitted: \code{"finv"} and \code{"ginv"}.}
 \value{
 A list containing:
 
-\itemize{
+\describe{
 \item{\code{title}: }{name of qif}
 \item{\code{version}: }{the current version of qif}
 \item{\code{model}: }{analysis model for link function, variance function and correlation struture}

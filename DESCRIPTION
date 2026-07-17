@@ -1,7 +1,7 @@
 Package: qif
 Title: Quadratic Inference Function
 Version: 1.5.1
-Date: 2019-7-2
+Date: 2026-07-17
 Authors@R: c(
     person(given = "Zhichang", family = "Jiang", role = c("aut")),
     person(given = "Peter", family = "Song", role = c("aut"), email = "pxsong@umich.edu"),
@@ -22,4 +22,4 @@ Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/umich-biostatistics/qif/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.3.3

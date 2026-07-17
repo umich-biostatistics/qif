@@ -4,8 +4,7 @@
 \alias{print.qif}
 \title{Print Function for qif Object}
 \usage{
-\method{print}{qif}(x, digits = NULL, quote = FALSE, prefix = "",
-  ...)
+\method{print}{qif}(x, digits = NULL, quote = FALSE, prefix = "", ...)
 }
 \arguments{
 \item{x}{the \code{qif} model object.}

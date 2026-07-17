@@ -4,7 +4,8 @@
 \name{epil}
 \alias{epil}
 \title{Seizure Counts for Epileptics}
-\format{A \code{data.frame} with 236 rows and 9 variables (columns):
+\format{
+A \code{data.frame} with 236 rows and 9 variables (columns):
 \describe{
 \item{y}{the count for the 2-week period.}
 \item{trt}{treatment, "placebo" or "progabide".}
@@ -15,7 +16,8 @@
 \item{period}{period, 1 to 4.}
 \item{lbase}{log-counts for the baseline period, centred to have zero mean.}
 \item{lage}{log-ages, centred to have zero mean.}
-}}
+}
+}
 \source{
 Thall, P. F. and Vail, S. C. (1990) Some covariance models for
 longitudinal count data with over-dispersion. Biometrics 46, 657–671.

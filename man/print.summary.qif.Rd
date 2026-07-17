@@ -4,8 +4,7 @@
 \alias{print.summary.qif}
 \title{Print the Summary of qif Object}
 \usage{
-\method{print}{summary.qif}(x, digits = NULL, quote = FALSE,
-  prefix = "", ...)
+\method{print}{summary.qif}(x, digits = NULL, quote = FALSE, prefix = "", ...)
 }
 \arguments{
 \item{x}{the \code{qif} model object.}

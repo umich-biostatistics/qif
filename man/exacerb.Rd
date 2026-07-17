@@ -4,7 +4,9 @@
 \name{exacerb}
 \alias{exacerb}
 \title{MS data}
-\format{An object of class \code{data.frame} with 765 rows and 14 columns.}
+\format{
+An object of class \code{data.frame} with 765 rows and 14 columns.
+}
 \source{
 Thal
 }
