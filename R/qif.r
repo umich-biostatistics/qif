@@ -136,6 +136,59 @@ summary.qif <- function(object, correlation = TRUE, ...)
 }
 
 
+#A series of helper functions for handling the inversion of the covariance matrix.
+.inv_finv <- function(A, B) {
+  a <- A
+  storage.mode(a) <- "double"
+  lda <- as.integer(nrow(a)); n <- as.integer(ncol(a))
+  z <- .Fortran("finv", a = a, lda, n)
+  z$a %*% B
+}
+
+.inv_ginv <- function(A, B) {
+  ginv(A) %*% B  
+}
+
+.inv_noinv_solve <- function(A, B) {
+  tryCatch(solve(A, B), error = function(e) NULL)
+}
+
+.inv_ridge_solve <- function(A, B) {
+  p <- ncol(A)
+  ridge <- 1e-8 * mean(abs(diag(A))) + 1e-12
+  tryCatch(solve(A + ridge * diag(p), B), error = function(e) NULL)
+}
+
+.inv_strategies <- list(
+  "finv"        = .inv_finv,
+  "ginv"        = .inv_ginv,
+  "noinv-solve" = .inv_noinv_solve,
+  "ridge-solve" = .inv_ridge_solve
+)
+
+.inv_adaptive <- function(A, B) {
+  for (name in c("noinv-solve", "ginv", "ridge-solve")) {
+    r <- .inv_strategies[[name]](A, B)
+    if (!is.null(r) && !anyNA(r)) return(r)
+  }
+  stop("All inversion strategies failed.")
+}
+
+.qif_solve <- function(A, B, invfun = "finv") {
+  if (invfun == "adaptive") return(.inv_adaptive(A, B))
+  fn <- .inv_strategies[[invfun]]
+  if (is.null(fn)) stop("Unknown inverse function: ", invfun)
+  out <- fn(A, B)
+  if (is.null(out) || anyNA(out))
+    stop("Matrix inversion failed using strategy '", invfun, "'.")
+  out
+}
+
+.qif_inverse <- function(A, invfun = "finv") {
+  .qif_solve(A, diag(ncol(A)), invfun)
+}
+
+
 #' Function to Solve a Quadratic Inference Function Model
 #'
 #' Produces an object of class "\code{qif}" which is a Quadratic Inference Function fit
@@ -164,8 +217,8 @@ summary.qif <- function(object, correlation = TRUE, ...)
 #' gamma family.
 #' @param corstr a character string specifying the correlation structure. The
 #' following are permitted: \code{"independence"}, \code{"exchangeable"}, \code{"AR-1"} and \code{"unstructured"}.
-#' @param invfun a character string specifying the matrix inverse function. The
-#' following are permitted: \code{"finv"} and \code{"ginv"}.
+#' @param invfun a character string specifying the matrix inverse strategy. The
+#' following are permitted: \code{"finv"}, \code{"ginv"}, \code{"noinv-solve"}, \code{"ridge-solve"}, \code{"adaptive"}
 #'
 #' @return A list containing:
 #'
@@ -261,8 +314,9 @@ qif <- function (formula = formula(data), id = id, data = parent.frame(), b = NU
 	tol = 1e-8, maxiter = 1000, family = gaussian, corstr = "independence", invfun="finv")
 {
 
-  if ((invfun!="finv")&&(invfun!="ginv")){
-    stop("Unknown inverse function. Only finv or ginv.")
+  valid_invfun <- c("finv", "ginv", "noinv-solve", "ridge-solve", "adaptive")
+  if (!invfun %in% valid_invfun) {
+      stop("Unknown inverse function. Must be one of: ", paste(valid_invfun, collapse = ", "))
   }
 
   #if (invfun=="ginv") && (length(findFunction("ginv", generic = TRUE))==0) {
@@ -650,35 +704,16 @@ qif <- function (formula = formula(data), id = id, data = parent.frame(), b = NU
     # after calculating all persons and sum them,
     # calculate Q, betanew,
 
-    if (invfun=="finv") {
-      a <- arsumc
-      storage.mode(a)<-"double"
-      lda<-as.integer(nrow(a))
-      n<-as.integer(ncol(a))
-      #print("a:")
-      #print(a)
-      z <- .Fortran("finv", a=a, lda, n)
-      arcinv <- z$a
-      #print("a inv:")
-      #print(arcinv)
-    }
-    else arcinv=ginv(arsumc)
-
-    Q <- t(arsumg) %*% arcinv %*% arsumg
-
-    arqif1dev <- t(arsumgfirstdev) %*% arcinv %*% arsumg
-    arqif2dev <- t(arsumgfirstdev) %*% arcinv %*% arsumgfirstdev
+    RHS <- cbind(arsumg, arsumgfirstdev)
+    sol <- .qif_solve(arsumc, RHS, invfun)
+    Z <- sol[, 1, drop = FALSE]
+    W <- sol[, -1, drop = FALSE]
+    Q <- t(arsumg) %*% Z
+    arqif1dev <- t(arsumgfirstdev) %*% Z
+    arqif2dev <- t(arsumgfirstdev) %*% W
 
 
-    if (invfun=="finv") {
-      a <- arqif2dev
-      storage.mode(a)<-"double"
-      lda<-as.integer(nrow(a))
-      n<-as.integer(ncol(a))
-      z <- .Fortran("finv", a=a, lda, n)
-      invarqif2dev <- z$a
-    }
-    else invarqif2dev <- ginv(arqif2dev)
+    invarqif2dev <- .qif_solve(arqif2dev, diag(ncol(arqif2dev)), invfun)
 
     betanew <- beta - invarqif2dev %*% arqif1dev
     betadiff <- abs(sum(betanew - beta))

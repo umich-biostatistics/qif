@@ -43,8 +43,8 @@ gamma family.}
 \item{corstr}{a character string specifying the correlation structure. The
 following are permitted: \code{"independence"}, \code{"exchangeable"}, \code{"AR-1"} and \code{"unstructured"}.}
 
-\item{invfun}{a character string specifying the matrix inverse function. The
-following are permitted: \code{"finv"} and \code{"ginv"}.}
+\item{invfun}{a character string specifying the matrix inverse strategy. The
+following are permitted: \code{"finv"}, \code{"ginv"}, \code{"noinv-solve"}, \code{"ridge-solve"}, \code{"adaptive"}}
 }
 \value{
 A list containing:
